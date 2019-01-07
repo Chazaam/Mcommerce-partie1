@@ -32,9 +32,13 @@ public class ProductController {
     
     //Récupérer la liste des produits
     @RequestMapping(value = "/Produits", method = RequestMethod.GET)
-    public MappingJacksonValue listeProduits() {
+    public MappingJacksonValue listeProduits(@RequestParam(value = "triAlpha", defaultValue = "false") boolean triAlpha) {
         Iterable<Product> produits;
-	    produits = productDao.findAll();  
+        if(triAlpha==true) {
+        	produits = productDao.findByOrderByNomAsc();
+	    }else {
+	    	produits = productDao.findAll();
+	    }        
         SimpleBeanPropertyFilter monFiltre = SimpleBeanPropertyFilter.serializeAllExcept("prixAchat");
         FilterProvider listDeNosFiltres = new SimpleFilterProvider().addFilter("monFiltreDynamique", monFiltre);
         MappingJacksonValue produitsFiltres = new MappingJacksonValue(produits);
@@ -96,7 +100,11 @@ public class ProductController {
     	return map;
    	}
     
-
+    //@Chazaam PARTIE 2 : liste de tous les produits triés par nom croissant
+    @GetMapping(value = "/trierProduitsParOrdreAlphabetique")
+   	public List<Product> trierProduitsParOrdreAlphabetique(){
+   		return productDao.findByOrderByNomAsc();
+   	}
 
     
     
