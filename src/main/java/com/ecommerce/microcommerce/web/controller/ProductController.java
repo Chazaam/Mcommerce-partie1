@@ -2,6 +2,7 @@ package com.ecommerce.microcommerce.web.controller;
 
 import com.ecommerce.microcommerce.dao.ProductDao;
 import com.ecommerce.microcommerce.model.Product;
+import com.ecommerce.microcommerce.web.exceptions.ProduitGratuitException;
 import com.ecommerce.microcommerce.web.exceptions.ProduitIntrouvableException;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -20,6 +21,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Api( description="API pour des opérations CRUD sur les produits.")
@@ -63,6 +65,7 @@ public class ProductController {
         Product productAdded =  productDao.save(product);
         if (productAdded == null)
             return ResponseEntity.noContent().build();
+        if (product.getPrix() <= 0) throw new  ProduitGratuitException("Le produit n'a pas pu être ajouté car son prix est incorrect: inférieur ou égale à 0.");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
